@@ -8,6 +8,7 @@ from core.views import UserLoginView, UserLogoutView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/user/', include('core.urls')),
+    path('api/request/', include('employee_request.urls')),
 
     path("api/login/", UserLoginView.as_view(), name="user-login"),
     path("api/logout/", UserLogoutView.as_view(), name="user-logout"),
