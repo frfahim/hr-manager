@@ -10,7 +10,7 @@ from .models import User
 from .serializers import UserSerializer, UserLoginSerializer, UserCeateSerializer
 
 def index(request):
-    return render(request, 'react.html')
+    return render(request, 'index.html')
 
 class UserListView(generics.ListCreateAPIView):
     def get_permissions(self):

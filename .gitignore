@@ -105,3 +105,4 @@ env/
 venv/
 
 settings.py
+uploads/
