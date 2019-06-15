@@ -12,9 +12,6 @@ class RequestCreateSerializer(serializers.ModelSerializer):
         fields = (
             'title',
             'description',
-            'request_status',
-            'request_by',
-            'processed_by',
         )
 
 class RequestListSerializer(RequestCreateSerializer):
@@ -23,4 +20,10 @@ class RequestListSerializer(RequestCreateSerializer):
 
     class Meta:
         model = EmployeeRequest
-        fields = RequestCreateSerializer.Meta.fields
+        fields = RequestCreateSerializer.Meta.fields + (
+            'id',
+            'request_by',
+            'processed_by',
+            'request_status',
+            'created_at',
+        )

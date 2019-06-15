@@ -25,6 +25,9 @@ class RequestListView(generics.ListCreateAPIView):
         queryset = filter_employee_request_permission_wise(self, queryset)
         return queryset.order_by('id')
 
+    def perform_create(self, serializer):
+        serializer.save(request_by=self.request.user)
+
 class RequestDetailsView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, )
 

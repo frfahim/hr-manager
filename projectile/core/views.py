@@ -30,6 +30,13 @@ class UserListView(generics.ListCreateAPIView):
     queryset = User.objects.all().order_by('id')
 
 
+class UserDetailsView(generics.RetrieveAPIView):
+    permission_classes = (IsAuthenticated, )
+    serializer_class = UserSerializer
+    lookup_field = 'pk'
+    queryset = User.objects.all()
+
+
 class UserLoginView(generics.CreateAPIView):
     permission_classes = ()
     serializer_class = UserLoginSerializer
@@ -38,7 +45,24 @@ class UserLoginView(generics.CreateAPIView):
         email = request.data.get("email")
         password = request.data.get("password")
         user = authenticate(email=email, password=password)
-        if user:
+        if user and user.is_active:
+            return Response({"token": user.auth_token.key})
+        else:
+            return Response(
+                {"error": "Wrong Credentials"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class UserLoginAPIView(generics.CreateAPIView):
+    permission_classes = ()
+    serializer_class = UserLoginSerializer
+
+    def post(self, request):
+        email = request.data.get("email")
+        password = request.data.get("password")
+        user = authenticate(email=email, password=password)
+        if user and user.is_active:
             login(request, user)
             return Response({"token": user.auth_token.key})
         else:

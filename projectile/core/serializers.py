@@ -10,6 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = (
+            'id',
             'email',
             'first_name',
             'last_name',
@@ -45,7 +46,6 @@ class UserCeateSerializer(serializers.ModelSerializer):
         user = User.objects.create(**validated_data)
         user.set_password(validated_data['password'])
         user.save()
-        Token.objects.create(user=user)
         return user
 
 

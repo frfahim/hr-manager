@@ -1,3 +1,4 @@
+import datetime
 from django.db import models
 
 from core.models import User
@@ -8,7 +9,7 @@ class EmployeeRequest(models.Model):
     description = models.TextField(blank=True, null=True)
     request_status = models.IntegerField(
         choices=RequestStatus.choices(),
-        default=RequestStatus.OPEN,
+        default=RequestStatus.OPEN.value,
     )
     request_by = models.ForeignKey(
         User,
@@ -24,6 +25,7 @@ class EmployeeRequest(models.Model):
         blank=True,
         db_index=True,
     )
+    created_at = models.DateField(default=datetime.date.today)
 
     class Meta:
         verbose_name = "Request"
