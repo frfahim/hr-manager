@@ -14,7 +14,7 @@ class User(AbstractUser):
         choices=PersonGroup.choices(),
         default=PersonGroup.EMPLOYEE.value,
     )
-    photo = models.ImageField(upload_to='uploads', blank=True)
+    photo = models.ImageField(upload_to='images', blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
