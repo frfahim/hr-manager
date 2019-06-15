@@ -1,6 +1,7 @@
 import axios from './Axios';
 
-const API_URL = "http://localhost:7000/api/"
+
+const API_URL = "http://localhost:8000/api/"
 
 /**
  * Fetch the data from the api
@@ -29,7 +30,7 @@ const get = ({ url, next, page }) => {
  * @param {url} string
  * @param {payload} object
  */
-const create = ({ url, payload }) => {
+const post = ({ url, payload }) => {
     return axios.post(`${API_URL}${url}`, payload)
 }
 
@@ -72,15 +73,17 @@ const details = ({ url, id }) => {
 
 const ApiHelper = {
     // user
-    userLogin: (params) => authorize({ url: 'user/login/', params }),
+    userLogin: (params) => authorize({ url: 'login/', params }),
     userLogout: () => get({ url: 'user/logout/'}),
     userList: () => get({ url: 'user/'}),
+    userCreate: (payload) => post({ url: 'user/', payload}),
 
     //request
-    employeeRequestCreate: ({ payload }) => create({ url: 'request/', payload }),
+    employeeRequestCreate: ({ payload }) => post({ url: 'request/', payload }),
     employeeRequestUpdate: ({ id, payload }) => patch({ url: 'request/', id, payload }),
     employeeRequestList: ({next, page} = {} ) => get({ url: 'request/', next, page }),
     employeeRequestDetails: (id) => details({ url: 'request/'}, id),
+    getemployeeRequestList: () => axios.get(API_URL + 'request/'),
 }
 
 export default ApiHelper
