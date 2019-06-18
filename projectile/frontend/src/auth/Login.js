@@ -51,11 +51,9 @@ class Login extends Component {
       .then(response => {
         this.setState({ error: "", loading: false });
         // after successfully login set token in local storage then redirec to home page
-        if (response.data.token) {
-          localStorage.setItem("token", response.data.token);
-          localStorage.setItem("user_id", response.data.user);
-          browserHistory.push("/#");
-        }
+          localStorage.setItem("users", JSON.stringify(response.data.user));
+          browserHistory.push("/");
+        // }
       })
       .catch(error => {
         this.setState({ loading: false });

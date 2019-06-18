@@ -6,10 +6,32 @@ import Auth from '../auth/Auth';
 import Home from './Home';
 
 import '../App.css';
+import ApiHelper from '../api/ApiHelper';
 
 class App extends Component {
 
+    constructor(props) {
+        super(props)
+        this.state = {
+            loading: true
+        }
+    }
+
+    componentDidMount () {
+        ApiHelper.meDetails().then(response => {
+            localStorage.setItem("users", JSON.stringify(response.data));
+            this.setState({loading: false})
+        }).catch(error => {
+            this.setState({loading: false})
+            localStorage.clear()
+            console.log( "error", error.response);
+        })
+    }
+
     render() {
+        if (this.state.loading) {
+            return <div>Loading</div>
+        }
 
         return (
             <div>

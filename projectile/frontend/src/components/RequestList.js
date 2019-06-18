@@ -9,10 +9,10 @@ class RequestList extends Component {
   constructor(props) {
     super(props);
 
-    this.handleNewRequest = this.handleNewRequest.bind(this);
     this.nextPage = this.nextPage.bind(this);
     this.handleUpdate = this.handleUpdate.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
+    // add employee request status object
     this.employeeRequestStatus = {
       Open: 1,
       Reviewed: 2,
@@ -22,10 +22,39 @@ class RequestList extends Component {
       employeeRequestsList: [],
       nextPageURL: "",
       requestStatus: this.employeeRequestStatus.Processed,
-      loading: true
     };
+
+    // add default person group to check which user is login
+    this.isEmployee = false;
+    this.isHr = false;
+    this.isManage = false;
+    this.personGroup = {
+      Employee: 1,
+      HR: 2,
+      Manage: 3
+    };
+    // get user data from local storage
+    this.users = localStorage.getItem('users')
+    this.users = JSON.parse(this.users)
+    this.setPersonGroup(this.users)
   }
 
+  // check curren login user group
+  setPersonGroup(userDetails) {
+    if (userDetails.person_group == this.personGroup.HR) {
+      this.isHr = true;
+      this.buttonText = 'Update'
+    }
+    if (userDetails.person_group == this.personGroup.Employee) {
+      this.isEmployee = true;
+    }
+    if (userDetails.person_group == this.personGroup.Manage) {
+      this.isManage = true;
+      this.buttonText = 'Processed'
+    }
+  }
+
+// ger request list
   get() {
     ApiHelper.employeeRequestList()
       .then(result => {
@@ -35,52 +64,29 @@ class RequestList extends Component {
         });
       })
       .catch(error => {
-        console.log("can't get employee request list", error);
+        console.log("can't get employee request list", error.response);
       });
   }
 
-  handleNewRequest() {
-    this.get();
-  }
 
   componentDidMount() {
     this.get();
-    this.isEmployee = false;
-    this.isHr = false;
-    this.isManage = false;
-    this.personGroup = {
-      Employee: 1,
-      HR: 2,
-      Manage: 3
-    };
-    ApiHelper.userDetails(Number(localStorage.getItem("user_id")))
-      .then(response => {
-        let userDetails = response.data;
-        if (userDetails.person_group == this.personGroup.HR) {
-          this.isHr = true;
-        }
-        if (userDetails.person_group == this.personGroup.Employee) {
-          this.isEmployee = true;
-        }
-        if (userDetails.person_group == this.personGroup.Manage) {
-          this.isManage = true;
-        }
-        this.setState({ loading: false });
-      })
-      .catch(error => {
-        console.log(error.response);
-      });
   }
 
+  // set request status changes data into state
   handleSelectChange(key, value) {
     this.setState({ [key]: value });
   }
 
+  // update request status
   handleUpdate(event, data) {
     let { requestStatus } = this.state;
     let payload = {
       request_status: Number(requestStatus)
     };
+    if (Number(requestStatus) == this.employeeRequestStatus.Processed) {
+      payload.processed_by = this.users.id
+    }
     ApiHelper.employeeRequestUpdate({ id: data.id, payload: payload }).then(
       () => {
         this.get();
@@ -88,6 +94,7 @@ class RequestList extends Component {
     );
   }
 
+  // get next page data
   nextPage() {
     ApiHelper.employeeRequestList({ next: this.state.nextPageURL })
       .then(result => {
@@ -101,61 +108,14 @@ class RequestList extends Component {
       });
   }
 
+  // this method will get request status name based on number value
   getRequestStatusName(requestStatus) {
     return Object.keys(this.employeeRequestStatus).find(
       key => this.employeeRequestStatus[key] === requestStatus
     );
   }
 
-  renderTableData() {
-    const requestStatusOption = [
-      { key: 2, value: "Reviewed" },
-      { key: 3, value: "Processed" }
-    ];
-    return this.state.employeeRequestsList.map((request, index) => {
-      const {
-        id,
-        title,
-        description,
-        request_status: requestStatus,
-        request_by: requestBy,
-        processed_by: processedBy
-      } = request;
-      let requestByName = `${requestBy.first_name} ${requestBy.last_name}`;
-      let processedByName = processedBy
-        ? `${processedBy.first_name} ${processedBy.last_name}`
-        : "";
-      return (
-        <tr key={index + 1}>
-          <td>{index + 1}</td>
-          <td>{title}</td>
-          <td>{description}</td>
-          <td>{requestByName}</td>
-          <td>{processedByName}</td>
-          <td>{this.getRequestStatusName(requestStatus)}</td>
-          {this.isHr && (
-            <td style={{ width: "150px" }}>
-              <Select
-                stateName="requestStatus"
-                defaultValue={this.state.requestStatus}
-                options={requestStatusOption}
-                // selectClassName="mb-2 mt-2"
-                onChange={this.handleSelectChange}
-              />
-            </td>
-          )}
-          {!this.isEmployee && (
-            <td>
-              <button onClick={event => this.handleUpdate(event, request)}>
-                Processed
-              </button>
-            </td>
-          )}
-        </tr>
-      );
-    });
-  }
-
+  // generate pdf file from html
   downloadPdf = () => {
     const data = this.state.employeeRequestsList.map((request, index) => {
       const {
@@ -180,7 +140,9 @@ class RequestList extends Component {
       ];
     });
 
+    // set content to generate pdf
     var docDefinition = {
+      header: 'HR Manager',
       content: [
         {
           layout: "lightHorizontalLines",
@@ -206,17 +168,70 @@ class RequestList extends Component {
     pdfMake.createPdf(docDefinition).download();
   };
 
+  // render table body data
+  renderTableData() {
+    const requestStatusOption = [
+      { key: 2, value: "Reviewed" },
+      { key: 3, value: "Processed" }
+    ];
+    // map request data and generate table body
+    return this.state.employeeRequestsList.map((request, index) => {
+      const {
+        id,
+        title,
+        description,
+        request_status: requestStatus,
+        request_by: requestBy,
+        processed_by: processedBy
+      } = request;
+      let requestByName = `${requestBy.first_name} ${requestBy.last_name}`;
+      let processedByName = processedBy
+        ? `${processedBy.first_name} ${processedBy.last_name}`
+        : "";
+      return (
+        <tr key={index + 1}>
+          <td>{index + 1}</td>
+          <td>{title}</td>
+          <td>{description}</td>
+          <td>{requestByName}</td>
+          <td>{processedByName}</td>
+          <td>{this.getRequestStatusName(requestStatus)}</td>
+          {this.isHr && (
+            <td style={{ width: "150px" }}>
+              <Select
+                stateName="requestStatus"
+                isDisable={requestStatus==3}
+                defaultValue={this.state.requestStatus}
+                options={requestStatusOption}
+                onChange={this.handleSelectChange}
+              />
+            </td>
+          )}
+          {!this.isEmployee && (
+            <td>
+              <button disabled={requestStatus==3} className="btn btn-success" onClick={event => this.handleUpdate(event, request)}>
+                {this.buttonText}
+              </button>
+            </td>
+          )}
+        </tr>
+      );
+    });
+  }
+
   render() {
-    const { loading } = this.state;
-    if (loading) {
-      return <div>Loading</div>;
-    }
     return (
       <div className="container">
-        <button onClick={this.downloadPdf}>Download</button>
+        <div className="my-2 float-right">
+        <button
+          onClick={this.downloadPdf}
+          className="btn btn-default btn-lg active"
+        >Download
+        </button>
+        </div>
         <table className="table table-striped table-hover">
           <thead>
-            <tr>
+            <tr className="bg-info">
               <th>SL</th>
               <th>Title</th>
               <th>Description</th>

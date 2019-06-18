@@ -68,18 +68,19 @@ class Register extends Component {
     payload.append('first_name', this.state.firstName)
     payload.append('last_name', this.state.lastName)
     payload.append('person_group', this.state.personGroup)
-    payload.append('photo', this.state.image)
+    if (this.state.image) {
+      payload.append('photo', this.state.image)
+    }
 
     this.setState({ loading: true })
+
+    // send request to create user
     ApiHelper.userCreate(payload)
       .then(response => {
         this.setState({ error: "", loading: false });
-        // after successfully register login register user and set token to storage
-        if (response.data.token) {
-          localStorage.setItem("token", response.data.token);
-          localStorage.setItem("user_id", response.data.id);
+        // after successfully register store user data in local storage
+          localStorage.setItem("users", JSON.stringify(response.data));
           browserHistory.push("/");
-        }
       })
       .catch(error => {
         if (error.response) {

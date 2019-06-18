@@ -85,10 +85,13 @@ const details = ({ url, id }) => {
 }
 
 const ApiHelper = {
-    // user
+    // auth
     userLogin: (params) => authorize({ url: 'login/', params }),
     userLogout: () => get({ url: 'logout/'}),
+
+    // user
     userList: () => get({ url: 'user/'}),
+    meDetails: () => get({ url: 'user/me/'}),
     userDetails: (id) => details({ url: 'user/', id: id}),
     userCreate: (payload) => postWithFile({ url: 'user/', payload}),
 
@@ -96,8 +99,6 @@ const ApiHelper = {
     employeeRequestCreate: ({ payload }) => post({ url: 'request/', payload }),
     employeeRequestUpdate: ({ id, payload }) => patch({ url: 'request/', id: id, payload: payload }),
     employeeRequestList: ({next, page} = {} ) => get({ url: 'request/', next, page }),
-    employeeRequestDetails: (id) => details({ url: 'request/', id: id}),
-    getemployeeRequestList: () => axios.get(API_URL + 'request/'),
 }
 
 export default ApiHelper

@@ -1,7 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render
 
-
 from rest_framework import generics, status, views
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -37,7 +36,7 @@ class UserProfileDetailsView(views.APIView):
     # permission_classes = ()
 
     def get(self, request):
-        user = User.objects.filter(id=self.request.id)
+        user = User.objects.filter(id=self.request.user.id)
         serializer = UserSerializer(user.first())
         return Response(serializer.data)
 
@@ -52,8 +51,9 @@ class UserLoginView(generics.CreateAPIView):
         user = authenticate(email=email, password=password)
         if user and user.is_active:
             login(request, user)
+            user_serializer = UserSerializer(user)
             return Response(
-                {"token": user.auth_token.key, "user": user.id}
+                {"token": user.auth_token.key, "user": user_serializer.data}
             )
         else:
             return Response(

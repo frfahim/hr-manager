@@ -62,7 +62,7 @@ class RequestCreate extends Component {
           ref={el => (this.requestCreateForm = el)}
         >
           <div className="form-group">
-            <label for="title">Title</label>
+            <label htmlFor="title">Title</label>
             <input
               type="text"
               id="title"
@@ -74,7 +74,7 @@ class RequestCreate extends Component {
             />
           </div>
           <div className="form-group">
-            <label for="description">Description</label>
+            <label htmlFor="description">Description</label>
             <textarea
               id="description"
               name="description"

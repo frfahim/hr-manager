@@ -31,14 +31,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
-        # request = self.context.get("request")
+        request = self.context.get("request")
         user = User.objects.create(**validated_data)
         user.set_password(validated_data['password'])
         user.save()
         # login by created user
-        # user = authenticate(email=validated_data['email'], password=validated_data['password'])
-        # if user and user.is_active:
-        #     login(request, user)
+        user = authenticate(email=validated_data['email'], password=validated_data['password'])
+        if user and user.is_active:
+            login(request, user)
         return user
 
 

@@ -3,6 +3,7 @@ import React, { Component } from "react";
 /**
  * Auto generate html select element
  * @props {selectClassName} string - add class in selected element
+ * @props {isDisable} boolean - disable selected element
  * @props {stateName} string - add selected option value to this state
  * @props {defaultVale} number - select a default value from option
  * @props {options} array - generate dropdown based on option data
@@ -16,6 +17,7 @@ class Select extends Component {
     this.state = {
       value: this.props.defaultValue
     };
+    this.isDisable = false
   }
 
   // set selected option value in state
@@ -39,6 +41,7 @@ class Select extends Component {
   render() {
     return (
       <select
+        disabled={this.props.isDisable}
         value={this.state.value}
         onChange={this.handleChange}
         className={`form-control  ${this.props.selectClassName}`}
