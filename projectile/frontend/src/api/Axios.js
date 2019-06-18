@@ -1,7 +1,7 @@
 import axios from 'axios';
 axios.defaults.withCredentials = true
 axios.defaults.xsrfHeaderName = "X-CSRFToken"
-// axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.xsrfCookieName = 'csrftoken'
 
 // send authorization token with request
 axios.interceptors.request.use((configuration) => {

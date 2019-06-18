@@ -35,6 +35,19 @@ const post = ({ url, payload }) => {
 }
 
 /**
+ * Create a new obj
+ * @param {url} string
+ * @param {payload} object
+ */
+const postWithFile = ({ url, payload }) => {
+    return axios.post(`${API_URL}${url}`, payload, {
+      headers: {
+        'content-type': 'multipart/form-data'
+      }
+    })
+}
+
+/**
  * Login Authorization
  * @param {url} string
  * @param {params} object
@@ -74,15 +87,16 @@ const details = ({ url, id }) => {
 const ApiHelper = {
     // user
     userLogin: (params) => authorize({ url: 'login/', params }),
-    userLogout: () => get({ url: 'user/logout/'}),
+    userLogout: () => get({ url: 'logout/'}),
     userList: () => get({ url: 'user/'}),
-    userCreate: (payload) => post({ url: 'user/', payload}),
+    userDetails: (id) => details({ url: 'user/', id: id}),
+    userCreate: (payload) => postWithFile({ url: 'user/', payload}),
 
     //request
     employeeRequestCreate: ({ payload }) => post({ url: 'request/', payload }),
-    employeeRequestUpdate: ({ id, payload }) => patch({ url: 'request/', id, payload }),
+    employeeRequestUpdate: ({ id, payload }) => patch({ url: 'request/', id: id, payload: payload }),
     employeeRequestList: ({next, page} = {} ) => get({ url: 'request/', next, page }),
-    employeeRequestDetails: (id) => details({ url: 'request/'}, id),
+    employeeRequestDetails: (id) => details({ url: 'request/', id: id}),
     getemployeeRequestList: () => axios.get(API_URL + 'request/'),
 }
 

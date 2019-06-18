@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Redirect, Switch} from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
-class Router extends Component {
+import RequestList from '../components/RequestList';
+import RequestCreate from '../components/RequestCreate';
+
+class BaseRouter extends Component {
   render() {
     return (
-      <BrowserRouter>
-          <Switch>
-          </Switch>
-      </BrowserRouter>
+      <Switch>
+        <Route path="/create" component={RequestCreate} />
+        <Route path="/requests" component={RequestList} />
+        <Route path="/" component={RequestList} />
+      </Switch>
     );
   }
 }
 
-export default Router;
+export default BaseRouter;

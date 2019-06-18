@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 /**
  * Auto generate html select element
+ * @props {selectClassName} string - add class in selected element
  * @props {stateName} string - add selected option value to this state
  * @props {defaultVale} number - select a default value from option
  * @props {options} array - generate dropdown based on option data
@@ -40,7 +41,7 @@ class Select extends Component {
       <select
         value={this.state.value}
         onChange={this.handleChange}
-        className="form-control mb-4"
+        className={`form-control  ${this.props.selectClassName}`}
       >
         {this.getOptions()}
       </select>

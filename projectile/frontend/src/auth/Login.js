@@ -12,7 +12,7 @@ class Login extends Component {
   constructor(props) {
     super(props);
     // delete token from storage when register component run
-    logOut()
+    // logOut()
 
     this.state = {
       email: "",
@@ -53,7 +53,8 @@ class Login extends Component {
         // after successfully login set token in local storage then redirec to home page
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);
-          browserHistory.push("/");
+          localStorage.setItem("user_id", response.data.user);
+          browserHistory.push("/#");
         }
       })
       .catch(error => {
@@ -73,63 +74,61 @@ class Login extends Component {
   render() {
     const { email, password, submitted, loading, error } = this.state;
     return (
-      <div>
-        <div className="col-md-4 col-md-offset-4">
-          <h2 className="text-center mb-2 text-uppercase">Sign in</h2>
-          <hr className="myt-2 mb-4" />
-          <form
-            name="form"
-            className="text-center"
-            onSubmit={this.handleSubmit}
+      <div className="col-md-4 offset-md-4 login-form">
+        <h2 className="text-center mb-2 text-uppercase">Sign in</h2>
+        <hr className="myt-2 mb-4" />
+        <form
+          name="form"
+          className="text-center"
+          onSubmit={this.handleSubmit}
+        >
+          <input
+            required
+            placeholder="E-mail"
+            className="form-control mb-4"
+            name="email"
+            value={email}
+            onChange={this.handleChange}
+            type="email"
+          />
+          {submitted && !email && (
+            <span className="alert-danger">Email is required</span>
+          )}
+          <input
+            required
+            placeholder="Password"
+            className="form-control mb-4"
+            name="password"
+            value={password}
+            onChange={this.handleChange}
+            type="password"
+          />
+          {submitted && !password && (
+            <span className="alert-danger">Password is required</span>
+          )}
+          {error && <div className={"alert alert-danger"}>{error}</div>}
+          <button
+            className="btn btn-info btn-block my-8 text-uppercase"
+            disabled={loading}
           >
-            <input
-              required
-              placeholder="E-mail"
-              className="form-control mb-4"
-              name="email"
-              value={email}
-              onChange={this.handleChange}
-              type="email"
-            />
-            {submitted && !email && (
-              <span className="alert-danger">Email is required</span>
-            )}
-            <input
-              required
-              placeholder="Password"
-              className="form-control mb-4"
-              name="password"
-              value={password}
-              onChange={this.handleChange}
-              type="password"
-            />
-            {submitted && !password && (
-              <span className="alert-danger">Password is required</span>
-            )}
-            {error && <div className={"alert alert-danger"}>{error}</div>}
-            <button
-              className="btn btn-info btn-block my-8 text-uppercase"
-              disabled={loading}
-            >
-              Sign In
-            </button>
-            <p className="mt-2">
-              Not a member?
-              <span className="ml-2">
-                <Link to="/regiter">Sign Up</Link>
-              </span>
-            </p>
+            Sign In
+          </button>
+          <p className="mt-2">
+            Not a member?
+            <span className="ml-2">
+              <Link to="/auth/register">Sign Up</Link>
+            </span>
+          </p>
 
-            <p>OR:</p>
+          <p>OR:</p>
 
-            <GoogleLogin
-              clientId={credential.google}
-              buttonText="Sign in With Google"
-              onSuccess={this.responseGoogle}
-              onFailure={this.responseGoogle}
-            />
-          </form>
-        </div>
+          <GoogleLogin
+            clientId={credential.google}
+            buttonText="Sign in With Google"
+            onSuccess={this.responseGoogle}
+            onFailure={this.responseGoogle}
+          />
+        </form>
       </div>
     );
   }

@@ -8,19 +8,19 @@ import { browserHistory } from "../helper/browserHistory";
 import { logOut } from "../helper/logOut";
 import {credential} from '../helper/credential';
 
-
 class Register extends Component {
   constructor(props) {
     super(props);
     // delete token from storage when register component run
-    logOut()
+    // logOut()
 
     this.state = {
       firstName: "",
       lastName: "",
       email: "",
       password: "",
-      requestStatus: 3,
+      personGroup: 1,
+      image: null,
       submitted: false,
       loading: false,
       error: ""
@@ -36,6 +36,14 @@ class Register extends Component {
     const { name, value } = event.target;
     this.setState({ [name]: value, error: "" });
   }
+
+  // set image field data
+  handleImageChange = (event) => {
+    console.log("TCL: Register -> handleImageChange -> event", event.target.files)
+    this.setState({
+      image: event.target.files[0]
+    })
+  };
 
   // set select data in state
   handleSelectChange(key, value) {
@@ -54,13 +62,13 @@ class Register extends Component {
       return;
     }
     // generate payload that will send to api
-    const payload = {
-      email: this.state.email,
-      password: this.state.password,
-      first_name: this.state.firstName,
-      last_name: this.state.lastName,
-      request_status: this.state.requestStatus
-    };
+    let payload = new FormData()
+    payload.append('email', this.state.email)
+    payload.append('password', this.state.password)
+    payload.append('first_name', this.state.firstName)
+    payload.append('last_name', this.state.lastName)
+    payload.append('person_group', this.state.personGroup)
+    payload.append('photo', this.state.image)
 
     this.setState({ loading: true })
     ApiHelper.userCreate(payload)
@@ -69,12 +77,17 @@ class Register extends Component {
         // after successfully register login register user and set token to storage
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);
+          localStorage.setItem("user_id", response.data.id);
           browserHistory.push("/");
         }
       })
       .catch(error => {
         if (error.response) {
-          this.setState({ error: error.response.data.error });
+          if (error.response.data.email) {
+            this.setState({ error: error.response.data.email[0] });
+          } else {
+            this.setState({ error: 'Wrong data submitted' })
+          }
         }
         this.setState({ loading: false });
       });
@@ -92,14 +105,15 @@ class Register extends Component {
       loading,
       error,
       firstName,
-      lastName
+      lastName,
+      image
     } = this.state;
 
     // set select field data
-    const selectOptions = [
-      { key: 1, value: "Manage" },
+    const personGroups = [
+      { key: 1, value: "Employee" },
       { key: 2, value: "HR" },
-      { key: 3, value: "Employee" }
+      { key: 3, value: "Manage" },
     ];
 
     return (
@@ -138,9 +152,10 @@ class Register extends Component {
               </div>
             </div>
             <Select
-              stateName="requestStatus"
-              defaultValue={this.state.requestStatus}
-              options={selectOptions}
+              selectClassName="mb-4"
+              stateName="personGroup"
+              defaultValue={this.state.personGroup}
+              options={personGroups}
               onChange={this.handleSelectChange}
             />
             <input
@@ -164,6 +179,22 @@ class Register extends Component {
               value={password}
               onChange={this.handleChange}
             />
+            <div className="custom-file mb-3">
+              <input
+                type="file"
+                className="custom-file-input"
+                name={image}
+                accept="image/png, image/jpeg"
+                id="customFile"
+                onChange={this.handleImageChange}
+              />
+              <label
+                className="custom-file-label"
+                htmlFor="customFile"
+              >
+              { this.state.image ? `${this.state.image.name}` : "Upload Image" }
+              </label>
+          </div>
             {submitted && !password && (
               <span className="alert-danger">Password is required</span>
             )}
