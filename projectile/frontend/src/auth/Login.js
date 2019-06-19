@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import GoogleLogin from "react-google-login";
 
 import ApiHelper from "../api/ApiHelper";
-import { logOut } from "../helper/logOut";
 import { browserHistory } from "../helper/browserHistory";
 import {credential} from '../helper/credential';
 
@@ -11,8 +10,6 @@ import {credential} from '../helper/credential';
 class Login extends Component {
   constructor(props) {
     super(props);
-    // delete token from storage when register component run
-    // logOut()
 
     this.state = {
       email: "",
@@ -121,7 +118,7 @@ class Login extends Component {
           <p>OR:</p>
 
           <GoogleLogin
-            clientId={credential.google}
+            clientId={credential('google')}
             buttonText="Sign in With Google"
             onSuccess={this.responseGoogle}
             onFailure={this.responseGoogle}

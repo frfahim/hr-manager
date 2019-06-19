@@ -41,14 +41,14 @@ class RequestList extends Component {
 
   // check curren login user group
   setPersonGroup(userDetails) {
-    if (userDetails.person_group == this.personGroup.HR) {
+    if (userDetails.person_group === this.personGroup.HR) {
       this.isHr = true;
       this.buttonText = 'Update'
     }
-    if (userDetails.person_group == this.personGroup.Employee) {
+    if (userDetails.person_group === this.personGroup.Employee) {
       this.isEmployee = true;
     }
-    if (userDetails.person_group == this.personGroup.Manage) {
+    if (userDetails.person_group === this.personGroup.Manage) {
       this.isManage = true;
       this.buttonText = 'Processed'
     }
@@ -84,7 +84,7 @@ class RequestList extends Component {
     let payload = {
       request_status: Number(requestStatus)
     };
-    if (Number(requestStatus) == this.employeeRequestStatus.Processed) {
+    if (Number(requestStatus) === this.employeeRequestStatus.Processed) {
       payload.processed_by = this.users.id
     }
     ApiHelper.employeeRequestUpdate({ id: data.id, payload: payload }).then(
@@ -119,7 +119,6 @@ class RequestList extends Component {
   downloadPdf = () => {
     const data = this.state.employeeRequestsList.map((request, index) => {
       const {
-        id,
         title,
         description,
         request_status: requestStatus,
@@ -177,7 +176,6 @@ class RequestList extends Component {
     // map request data and generate table body
     return this.state.employeeRequestsList.map((request, index) => {
       const {
-        id,
         title,
         description,
         request_status: requestStatus,
@@ -200,7 +198,7 @@ class RequestList extends Component {
             <td style={{ width: "150px" }}>
               <Select
                 stateName="requestStatus"
-                isDisable={requestStatus==3}
+                isDisable={requestStatus===3}
                 defaultValue={this.state.requestStatus}
                 options={requestStatusOption}
                 onChange={this.handleSelectChange}
@@ -209,7 +207,7 @@ class RequestList extends Component {
           )}
           {!this.isEmployee && (
             <td>
-              <button disabled={requestStatus==3} className="btn btn-success" onClick={event => this.handleUpdate(event, request)}>
+              <button disabled={requestStatus===3} className="btn btn-success" onClick={event => this.handleUpdate(event, request)}>
                 {this.buttonText}
               </button>
             </td>

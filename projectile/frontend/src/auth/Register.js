@@ -5,14 +5,11 @@ import GoogleLogin from "react-google-login";
 import ApiHelper from "../api/ApiHelper";
 import Select from "../helper/Select";
 import { browserHistory } from "../helper/browserHistory";
-import { logOut } from "../helper/logOut";
 import {credential} from '../helper/credential';
 
 class Register extends Component {
   constructor(props) {
     super(props);
-    // delete token from storage when register component run
-    // logOut()
 
     this.state = {
       firstName: "",

@@ -10,7 +10,9 @@ class Header extends Component {
     this.users = localStorage.getItem('users')
     this.users = JSON.parse(this.users)
     if (this.users.photo){
-      this.users.photo = `http://localhost:8000${this.users.photo}`
+      if (!this.users.photo.match(/http\:\/\/localhost\:8000/g)){
+        this.users.photo = `http://localhost:8000${this.users.photo}`
+      }
     }
   }
 

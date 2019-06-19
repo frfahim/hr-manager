@@ -31,7 +31,7 @@ class Select extends Component {
 
   // generate option element from options array of object data
   getOptions() {
-    const { options, defaultValue } = this.props;
+    const { options } = this.props;
     return options.map(option => (
       <option value={option.key} key={option.key}>
         {option.value}
