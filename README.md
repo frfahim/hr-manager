@@ -18,12 +18,13 @@ cd hr-manager
 pip install -r requirements.txt
 cd projectile/frontend
 npm install
+npm run collect
 cd ..
 python manage.py migrate
 python manage.py createsuperuser  #for create a super user
 python manage.py runserver
 ```
 
-> to install virtualenv in linux based os check this -> https://gist.github.com/frfahim/73c0fad6350332cef7a653bcd762f08d
+> install virtualenv and pip in ubuntu check this [gist](https://gist.github.com/frfahim/73c0fad6350332cef7a653bcd762f08d)
 
-> to install nodejs and npm check this -> https://gist.github.com/isaacs/579814/33db917b7b6737561855ac77796cc089fbc25b8b
+> install nodejs and npm check this [gist](https://gist.github.com/isaacs/579814/33db917b7b6737561855ac77796cc089fbc25b8b)

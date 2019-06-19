@@ -3,7 +3,7 @@ from django.shortcuts import render
 
 from rest_framework import generics, status, views
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 
 from .models import User
 from .serializers import UserSerializer, UserLoginSerializer
@@ -12,7 +12,17 @@ def index(request):
     return render(request, 'index.html')
 
 class UserListView(generics.ListCreateAPIView):
+    """
+    get:
+    Return a list of all the users.
+    Authenticate user will get list
+
+    post:
+    Create a new user instance.
+    Any user can post
+    """
     def get_permissions(self):
+        # set api permission based on request type
         if self.request.method == 'GET':
             self.permission_classes = [IsAuthenticated, ]
         else:
@@ -25,16 +35,10 @@ class UserListView(generics.ListCreateAPIView):
     queryset = User.objects.all().order_by('id')
 
 
-class UserDetailsView(generics.RetrieveAPIView):
-    permission_classes = (IsAuthenticated, )
-    serializer_class = UserSerializer
-    lookup_field = 'pk'
-    queryset = User.objects.all()
-
-
-class UserProfileDetailsView(views.APIView):
-    # permission_classes = ()
-
+class UserDetailsView(views.APIView):
+    """
+    Return request user details
+    """
     def get(self, request):
         user = User.objects.filter(id=self.request.user.id)
         serializer = UserSerializer(user.first())
@@ -42,6 +46,11 @@ class UserProfileDetailsView(views.APIView):
 
 
 class UserLoginView(generics.CreateAPIView):
+    """
+    post:
+    Request with email and password
+    if user is authenticate return user details with token
+    """
     permission_classes = ()
     serializer_class = UserLoginSerializer
 
@@ -63,6 +72,9 @@ class UserLoginView(generics.CreateAPIView):
 
 
 class UserLogoutView(views.APIView):
+    """
+    logged out current login user
+    """
     def get(self, request, format=None):
         logout(request)
         return Response()

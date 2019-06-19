@@ -5,17 +5,7 @@ from core.serializers import UserSerializer
 from .models import EmployeeRequest
 
 
-class RequestCreateSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = EmployeeRequest
-        fields = (
-            'title',
-            'description',
-        )
-
-
-class RequestUpdateSerializer(serializers.ModelSerializer):
+class RequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EmployeeRequest
@@ -28,16 +18,14 @@ class RequestUpdateSerializer(serializers.ModelSerializer):
         )
 
 
-class RequestListSerializer(RequestCreateSerializer):
+class RequestListSerializer(RequestSerializer):
     request_by = UserSerializer()
     processed_by = UserSerializer()
 
     class Meta:
         model = EmployeeRequest
-        fields = RequestCreateSerializer.Meta.fields + (
-            'id',
+        fields = RequestSerializer.Meta.fields + (
             'request_by',
             'processed_by',
-            'request_status',
             'created_at',
         )

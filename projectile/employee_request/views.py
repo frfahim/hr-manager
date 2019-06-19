@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate, login, logout
+from django.db import IntegrityError
 
 from rest_framework import generics, status, views
 from rest_framework.response import Response
@@ -8,17 +9,27 @@ from core.enums import PersonGroup
 from .enums import RequestStatus
 from .helpers import filter_employee_request_permission_wise
 from .models import EmployeeRequest
-from .serializers import RequestListSerializer, RequestCreateSerializer, RequestUpdateSerializer
+from .serializers import RequestListSerializer, RequestSerializer
 
 
 class RequestListView(generics.ListCreateAPIView):
+    """
+    get:
+    Return a list of employee request
+    Authenticate user will get list
+    data set will be based on user person group
+
+    post:
+    Create a new request by log in user
+    Authenticate users can create new request
+    """
     permission_classes = (IsAuthenticated, )
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return RequestListSerializer
         else:
-            return RequestCreateSerializer
+            return RequestSerializer
 
     def get_queryset(self):
         queryset = EmployeeRequest.objects.all().select_related(
@@ -32,6 +43,13 @@ class RequestListView(generics.ListCreateAPIView):
         serializer.save(request_by=self.request.user)
 
 class RequestDetailsView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    get:
+    details data of a employee request
+
+    update:
+    a request can be updated by hr and manage users
+    """
     permission_classes = (IsAuthenticated, )
     lookup_field = 'pk'
     queryset = EmployeeRequest.objects.all()
@@ -40,9 +58,9 @@ class RequestDetailsView(generics.RetrieveUpdateDestroyAPIView):
         if self.request.method == 'GET':
             return RequestListSerializer
         elif self.request.method == 'PATCH':
-            return RequestUpdateSerializer
+            return RequestSerializer
         else:
-            return RequestCreateSerializer
+            return RequestSerializer
 
     def update(self, request, *args, **kwargs):
         try:
