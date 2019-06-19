@@ -60,7 +60,7 @@ class RequestList extends Component {
       .then(result => {
         this.setState({
           employeeRequestsList: result.data.results,
-          nextPageURL: ""
+          nextPageURL: result.data.next,
         });
       })
       .catch(error => {
@@ -99,7 +99,7 @@ class RequestList extends Component {
     ApiHelper.employeeRequestList({ next: this.state.nextPageURL })
       .then(result => {
         this.setState({
-          employeeRequestsList: result.data,
+          employeeRequestsList: this.state.employeeRequestsList.concat(result.data.results),
           nextPageURL: result.data.next
         });
       })
@@ -141,10 +141,11 @@ class RequestList extends Component {
 
     // set content to generate pdf
     var docDefinition = {
-      header: 'HR Manager',
       content: [
+        {text: 'HR Manager', style: 'header'},
         {
           layout: "lightHorizontalLines",
+          style: 'tableExample',
           table: {
             headerRows: 1,
             widths: ["5%", "22%", "31%", "15%", "15%", "12%"],
@@ -218,12 +219,13 @@ class RequestList extends Component {
   }
 
   render() {
+    const { nextPageURL } = this.state
     return (
       <div className="container">
         <div className="my-2 float-right">
         <button
           onClick={this.downloadPdf}
-          className="btn btn-default btn-lg active"
+          className="btn btn-outline-primary"
         >Download
         </button>
         </div>
@@ -242,6 +244,15 @@ class RequestList extends Component {
           </thead>
           <tbody>{this.renderTableData()}</tbody>
         </table>
+        <div className="my-2">
+        { nextPageURL ?
+        <button
+          onClick={this.nextPage}
+          className="btn btn-outline-info"
+        >Load More
+        </button> : ''
+        }
+        </div>
       </div>
     );
   }

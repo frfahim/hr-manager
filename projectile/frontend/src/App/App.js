@@ -18,6 +18,7 @@ class App extends Component {
     }
 
     componentDidMount () {
+        // get login user details and to local storage
         ApiHelper.meDetails().then(response => {
             localStorage.setItem("users", JSON.stringify(response.data));
             this.setState({loading: false})
